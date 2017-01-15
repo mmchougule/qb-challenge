@@ -1,0 +1,81 @@
+let alerts = [];
+let chance = new Chance(); // a handy lib for generating random stuff
+let total = 0;
+
+// you can reduce this if you're feeling brave
+let alertInterval = 500; // reduce this to 500 if you feel brave!
+
+const createNewAlert = () => {
+  // Choose random from details. Creates an array
+  let company = chance.pickset(details.company, 2);
+  // console.log(company);
+  let companyDetail = "";
+  // Iterate over this array
+  let ugh = (company.map(function(data) {
+    companyDetail += " " + data;
+  }));
+  return {
+    title: chance.sentence({words: 2}),
+    severity: chance.integer({ min: 1, max: 5 }),
+    engineer: chance.pickone(['Maren', 'Martha', 'Aris', 'Emily']),
+    description: chance.paragraph({ sentences: 2 }),
+    avator: chance.avatar({protocol: 'https'}),
+    time: new Date().toLocaleTimeString(),
+    total: total++,
+    detail: companyDetail,
+  };
+};
+let tempData = ['Quantum', 'Systems', 'Aris', 'Mechanical', 'Engineering', 'School'];
+let details = {
+  company: tempData, // show us your creativity!
+  department: 'Mechanical Engineering'
+};
+// show details. onClick event
+const showDetails = (key) => {
+  let desc = alerts[key].detail;
+  let title = alerts[key].title;
+  let mountNode = document.getElementById(key);
+  var temp = (<div>I work at {desc} as a {title}</div>);
+  ReactDOM.render(temp, mountNode);
+}
+
+// (you need to make this a lot better)
+const onAlert = (alert) => {
+  
+  // Create new alert here
+  const newalert = createNewAlert();
+  alerts.push(newalert);
+  // Get the total
+  const total = alerts.length;
+
+  const el = (
+    // Iterate over the map and print stuff.
+    alerts.map(function(item)
+    {
+      return <li key={item.total}>
+              It is {item.time} now.
+        I am {item.engineer}! <button style={{marginLeft: 100}} onClick={() => showDetails( item.total)}>click me!</button>
+              <div id={item.total} style={{paddingTop: 10}}></div>
+             </li>
+    })
+  );
+  const element = (
+    <div>
+      <h1>Alerts Total : {total}</h1>
+      <ul>{el}</ul>
+    </div>
+  );
+
+  // Render element 
+  ReactDOM.render(
+    element,
+    document.getElementById('root')
+  );
+};
+
+// you probably don't need to edit this
+const _interval = setInterval(() => {
+  // const alert = createNewAlert();
+  // alerts.push(alert);
+  onAlert(alert);
+}, alertInterval);
